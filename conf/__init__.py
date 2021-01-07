@@ -67,7 +67,6 @@ dolomite_test_web3_address = os.getenv("DOLOMITE_TEST_ADDR")
 
 # Loopring Tests
 loopring_accountid = os.getenv("LOOPRING_ACCOUNTID")
-loopring_exchangeid = os.getenv("LOOPRING_EXCHANGEID")
 loopring_api_key = os.getenv("LOOPRING_API_KEY")
 loopring_private_key = os.getenv("LOOPRING_PRIVATE_KEY")
 

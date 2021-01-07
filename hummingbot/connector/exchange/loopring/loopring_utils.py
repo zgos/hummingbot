@@ -10,19 +10,13 @@ EXAMPLE_PAIR = "LRC-ETH"
 
 DEFAULT_FEES = [0.0, 0.2]
 
-LOOPRING_ROOT_API = "https://api.loopring.io"
-LOOPRING_WS_KEY_PATH = "/v2/ws/key"
+LOOPRING_ROOT_API = "https://api3.loopring.io"
+LOOPRING_WS_KEY_PATH = "/v3/ws/key"
 
 KEYS = {
     "loopring_accountid":
         ConfigVar(key="loopring_accountid",
                   prompt="Enter your Loopring account id >>> ",
-                  required_if=using_exchange("loopring"),
-                  is_secure=True,
-                  is_connect_key=True),
-    "loopring_exchangeid":
-        ConfigVar(key="loopring_exchangeid",
-                  prompt="Enter the Loopring exchange id >>> ",
                   required_if=using_exchange("loopring"),
                   is_secure=True,
                   is_connect_key=True),

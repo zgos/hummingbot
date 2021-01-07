@@ -13,7 +13,7 @@ from typing import (
 from hummingbot.core.event.events import TradeType
 from hummingbot.core.utils.async_utils import safe_ensure_future
 
-TOKEN_CONFIGURATIONS_URL = '/api/v2/exchange/tokens'
+TOKEN_CONFIGURATIONS_URL = '/api/v3/exchange/tokens'
 
 
 class LoopringAPITokenConfigurationDataSource():
@@ -38,14 +38,14 @@ class LoopringAPITokenConfigurationDataSource():
     async def _configure(self):
         async with aiohttp.ClientSession() as client:
             response: aiohttp.ClientResponse = await client.get(
-                f"https://api.loopring.io{TOKEN_CONFIGURATIONS_URL}"
+                f"https://api3.loopring.io{TOKEN_CONFIGURATIONS_URL}"
             )
 
             if response.status >= 300:
                 raise IOError(f"Error fetching active loopring token configurations. HTTP status is {response.status}.")
 
             response_dict: Dict[str, Any] = await response.json()
-            for config in response_dict['data']:
+            for config in response_dict:
                 self._token_configurations[config['tokenId']] = config
                 self._tokenid_lookup[config['symbol']] = config['tokenId']
                 self._symbol_lookup[config['tokenId']] = config['symbol']

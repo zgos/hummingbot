@@ -51,7 +51,6 @@ class LoopringExchangeUnitTest(unittest.TestCase):
         cls.clock: Clock = Clock(ClockMode.REALTIME)
         cls.market: LoopringExchange = LoopringExchange(
             conf.loopring_accountid,
-            conf.loopring_exchangeid,
             conf.loopring_private_key,
             conf.loopring_api_key,
             trading_pairs=["ETH-USDT"],

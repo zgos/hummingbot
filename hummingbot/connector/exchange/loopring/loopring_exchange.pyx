@@ -81,17 +81,17 @@ API_CALL_TIMEOUT = 10.0
 
 # ==========================================================
 
-GET_ORDER_ROUTE = "/api/v2/order"
-MAINNET_API_REST_ENDPOINT = "https://api.loopring.io/"
-MAINNET_WS_ENDPOINT = "wss://ws.loopring.io/v2/ws"
-EXCHANGE_INFO_ROUTE = "api/v2/timestamp"
-BALANCES_INFO_ROUTE = "api/v2/user/balances"
-ACCOUNT_INFO_ROUTE = "api/v2/account"
-MARKETS_INFO_ROUTE = "api/v2/exchange/markets"
-TOKENS_INFO_ROUTE = "api/v2/exchange/tokens"
-NEXT_ORDER_ID = "api/v2/orderId"
+GET_ORDER_ROUTE = "/api/v3/order"
+MAINNET_API_REST_ENDPOINT = "https://api3.loopring.io/"
+MAINNET_WS_ENDPOINT = "wss://ws.loopring.io/v3/ws"
+EXCHANGE_INFO_ROUTE = "api/v3/timestamp"
+BALANCES_INFO_ROUTE = "api/v3/user/balances"
+ACCOUNT_INFO_ROUTE = "api/v3/account"
+MARKETS_INFO_ROUTE = "api/v3/exchange/markets"
+TOKENS_INFO_ROUTE = "api/v3/exchange/tokens"
+NEXT_ORDER_ID = "api/v3/orderId"
 ORDER_ROUTE = "api/v3/order"
-ORDER_CANCEL_ROUTE = "api/v2/orders"
+ORDER_CANCEL_ROUTE = "api/v3/orders"
 MAXIMUM_FILL_COUNT = 16
 UNRECOGNIZED_ORDER_DEBOUCE = 20  # seconds
 
@@ -145,7 +145,6 @@ cdef class LoopringExchange(ExchangeBase):
 
     def __init__(self,
                  loopring_accountid: int,
-                 loopring_exchangeid: int,
                  loopring_private_key: str,
                  loopring_api_key: str,
                  poll_interval: float = 10.0,
@@ -182,7 +181,6 @@ cdef class LoopringExchange(ExchangeBase):
         self._polling_update_task = None
 
         self._loopring_accountid = int(loopring_accountid)
-        self._loopring_exchangeid = int(loopring_exchangeid)
         self._loopring_private_key = loopring_private_key
 
         # State
@@ -314,7 +312,6 @@ cdef class LoopringExchange(ExchangeBase):
         token_s_id = int(order_details["tokenSId"])
         order_id = await self._get_next_order_id(token_s_id)
         order = {
-            "exchangeId": self._loopring_exchangeid,
             "orderId": order_id,
             "accountId": self._loopring_accountid,
             "allOrNone": "false",
@@ -685,10 +682,10 @@ cdef class LoopringExchange(ExchangeBase):
             async with self._lock:
                 completed_tokens = set()
                 for data in updates:
-                    padded_total_amount: str = data['totalAmount']
+                    padded_total_amount: str = data['total']
                     token_id: int = data['tokenId']
                     completed_tokens.add(token_id)
-                    padded_amount_locked: string = data['amountLocked']
+                    padded_amount_locked: string = data['locked']
 
                     token_symbol: str = self._token_configuration.get_symbol(token_id)
                     total_amount: Decimal = self._token_configuration.unpad(padded_total_amount, token_id)
@@ -781,7 +778,7 @@ cdef class LoopringExchange(ExchangeBase):
                                                    params = {
                                                        "accountId": self._loopring_accountid
                                                    })
-        await self._set_balances(balances_response["data"])
+        await self._set_balances(balances_response)
 
     async def _update_trading_rules(self):
         markets_info, tokens_info = await asyncio.gather(
